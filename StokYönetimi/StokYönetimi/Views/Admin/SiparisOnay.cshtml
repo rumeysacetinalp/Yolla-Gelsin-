@@ -1,0 +1,286 @@
+﻿@model List<StokYönetimi.Models.Order>
+
+@{
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+    ViewData["Title"] = "Sipariş Onayı";
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header text-white">
+            <h2 class="text-center fw-bold">Bekleyen Siparişler</h2>
+        </div>
+
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <p class="text-center text-muted">Bekleyen sipariş bulunmamaktadır.</p>
+            }
+            else
+            {
+                <!-- Tabloyu kaydırılabilir bir alan içine alıyoruz -->
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-striped table-bordered align-middle">
+                        <thead class="bg-dark text-white">
+                            <tr>
+                                <th scope="col">Müşteri Adı</th>
+                                <th scope="col">Ürün Adı</th>
+                                <th scope="col">Adet</th>
+                                <th scope="col">Toplam Fiyat</th>
+                                <th scope="col">Sipariş Tarihi</th>
+                                <th scope="col">Bekleme Süresi (dk)</th>
+                                <th scope="col">Müşteri Türü</th>
+                                <th scope="col">Öncelik Skoru</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderList">
+                            @foreach (var order in Model)
+                            {
+                                var waitTime = (DateTime.Now - order.OrderDate).TotalSeconds; // Bekleme süresi
+                                var priorityScore = (order.Customer.CustomerType == "Premium" ? 15 : 10) + (waitTime * 0.5); // Öncelik skoru
+
+                                <tr>
+                                    <td>@order.Customer.CustomerName</td>
+                                    <td>@order.Product.ProductName</td>
+                                    <td>@order.Quantity</td>
+                                    <td>@order.TotalPrice.ToString("C")</td>
+                                    <td>@order.OrderDate.ToString("g")</td>
+                                    <td>@Math.Floor(waitTime / 60).ToString("0")</td>
+                                    <td>
+                                        @if (order.Customer.CustomerType == "Premium")
+                                        {
+                                            <span class="badge bg-success">Premium</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Normal</span>
+                                        }
+                                    </td>
+                                    <td>@priorityScore.ToString("0.00")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Tümünü Onayla Butonu -->
+                <div class="text-center mt-4">
+                    <form method="post" asp-action="SiparisOnayla">
+                        <button type="submit" class="btn btn-lg text-white">
+                            <i class="bi bi-check-circle-fill"></i> Tümünü Onayla
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+
+        <!-- Alt Bilgi -->
+        <div class="card-footer bg-light text-center">
+            <strong>Toplam Bekleyen Sipariş Sayısı:</strong>
+            <span class="badge bg-dark rounded-pill fs-6">@Model.Count</span>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-responsive {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+
+        .table-responsive::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 8px;
+        }
+
+            .table-responsive::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+</style>
+
+
+<style>
+   
+
+    #orderList tr {
+        transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+        opacity: 0;
+    }
+
+        #orderList tr.visible {
+            opacity: 1;
+        }
+
+</style>
+
+<style>
+    body {
+        background-color: #f4f4f9; /* Genel arka plan rengi */
+        font-family: Arial, sans-serif;
+    }
+
+    .card {
+        border-radius: 15px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    .card-header {
+        background-color: #4CAF50; /* Başlık arka planı */
+        color: white;
+        padding: 20px;
+        font-size: 1.5rem;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+        text-align: center;
+    }
+
+        .table th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            padding: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .table td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            color: #333;
+        }
+
+        .table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .table tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+
+        .table tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+    .badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+        .badge.bg-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .badge.bg-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+    .text-center {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .card-footer {
+        margin-top: 20px;
+    }
+
+    .btn-lg {
+        display: inline-block;
+        margin: 0 auto;
+        background-color: #F27A1A;
+        color: white;
+        border-radius: 30px;
+        padding: 10px 40px;
+        font-size: 1rem;
+        border: none;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+        .btn-lg:hover {
+            background-color: #d76c10;
+            transition: all 0.3s ease-in-out;
+        }
+
+
+    .card-footer {
+        background-color: #f8f9fa;
+        text-align: center;
+        padding: 15px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #333;
+    }
+</style>
+
+
+<script>
+
+    setInterval(() => {
+        $.ajax({
+            url: '/Admin/GetSortedOrders', // API adresi
+            method: 'GET',
+            success: (data) => {
+                const orderList = $('#orderList');
+                orderList.empty(); // Mevcut listeyi temizle
+
+                data.forEach(order => {
+                    const row = `
+                        <tr>
+                            <td>${order.customerName}</td>
+                            <td>${order.productName}</td>
+                            <td>${order.quantity}</td>
+                            <td>${order.totalPrice}</td>
+                            <td>${order.orderDate}</td>
+                            <td>${Math.floor(order.waitTime / 60)} dk</td>
+                            <td>
+                                ${order.customerType === "Premium"
+                            ? '<span class="badge bg-success">Premium</span>'
+                            : '<span class="badge bg-secondary">Normal</span>'}
+                            </td>
+                            <td>${order.priorityScore.toFixed(2)}</td>
+                        </tr>`;
+                    orderList.append(row);
+                });
+
+                animateList(); // Animasyon başlat
+            },
+            error: (err) => {
+                console.error('Sipariş listesi güncellenemedi:', err);
+            }
+        });
+    }, 5000); // Her 5 saniyede bir çağrı yap
+
+
+    function animateList() {
+        $('#orderList tr').each(function (index) {
+            $(this).css('transform', `translateY(${index * 10}px)`).addClass('visible');
+        });
+    }
+
+
+
+</script>

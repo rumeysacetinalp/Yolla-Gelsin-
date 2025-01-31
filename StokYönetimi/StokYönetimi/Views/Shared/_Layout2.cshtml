@@ -1,0 +1,218 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YollaGelsin</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <style>
+        /* Genel Stil */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid #F27A1A;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.8rem;
+            color: #F27A1A !important;
+            margin-right: 20px;
+        }
+
+        /* Arama Çubuğu */
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .search-input {
+            width: 100%;
+            border-radius: 25px;
+            padding: 8px 15px;
+            padding-right: 40px;
+            border: 1px solid #ddd;
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #333;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+            .search-icon:hover {
+                color: #F27A1A;
+            }
+
+        /* Üst Menü İkonları */
+        .icon-link {
+            color: #333;
+            font-size: 1rem;
+            margin-left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: bold;
+        }
+
+            .icon-link:hover {
+                color: #F27A1A !important;
+            }
+
+        /* Alt Kategori Menü */
+        .category-bar {
+            background-color: #f8f9fa;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+            .category-bar a {
+                font-size: 1.1rem; /* Yazı boyutunu büyüttüm */
+                margin: 0 15px;
+                color: #333;
+                text-decoration: none;
+                font-weight: bold;
+                transition: color 0.3s ease;
+            }
+
+                .category-bar a:hover {
+                    color: #F27A1A;
+                }
+
+        #searchResults {
+            border: 1px solid #ddd;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #fff;
+            position: absolute;
+            width: 100%;
+            z-index: 1000;
+        }
+
+            #searchResults li {
+                padding: 10px;
+                cursor: pointer;
+            }
+
+                #searchResults li:hover {
+                    background-color: #f0f0f0;
+                }
+
+
+    </style>
+</head>
+<body>
+    <!-- Üst Navbar -->
+    <nav class="navbar navbar-expand-lg shadow-sm">
+        <div class="container d-flex justify-content-between align-items-center">
+            <!-- Logo -->
+            <a class="navbar-brand" href="/UserDashboard/Dashboard">
+                YollaGelsin
+            </a>
+
+            <!-- Arama Çubuğu -->
+            <div class="search-container">
+                <input class="search-input" type="search" placeholder="Aradığınız ürün, kategori veya markayı yazınız..." aria-label="Search" id="searchInput">
+                <i class="bi bi-search search-icon" id="searchButton"></i>
+                <ul id="searchResults" style="list-style: none; padding: 0; margin-top: 10px;"></ul>
+            </div>
+
+
+            <!-- Sağ Üst Menüler -->
+            <div class="d-flex align-items-center">
+                <!-- Hesap Menüsü -->
+                <div class="dropdown">
+                    <a href="#" class="icon-link dropdown-toggle" id="accountMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person"></i> Hesabım
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountMenu">
+                        <li><a class="dropdown-item" href="/UserDashboard/Profil" target="_self">Profilimi Görüntüle</a></li>
+                        <li><a class="dropdown-item" href="/Home/Login" target="_self">Çıkış Yap</a></li>
+
+                    </ul>
+                </div>
+
+                <a href="#" class="icon-link"><i class="bi bi-heart"></i> Favorilerim</a>
+                <a href="@Url.Action("GetCard", "UserDashboard")" class="icon-link">
+                    <i class="bi bi-cart"></i> Sepetim</a>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <!-- Ana İçerik Alanı -->
+    <main class="content container mt-4">
+        @RenderBody()
+    </main>
+
+
+
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var dropdowns = document.querySelectorAll('.dropdown-toggle');
+            dropdowns.forEach(function (dropdown) {
+                new bootstrap.Dropdown(dropdown);
+            });
+        });
+
+        document.querySelectorAll('.dropdown-toggle').forEach(function (dropdown) {
+            console.log(dropdown);
+        });
+
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains('dropdown-toggle')) {
+                new bootstrap.Dropdown(event.target);
+            }
+        });
+
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const query = this.value.trim();
+
+            if (query.length > 2) { // En az 3 karakterden sonra arama yap
+                fetch(`/api/search?query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Gelen veriyi listele
+                        const resultList = document.getElementById('searchResults');
+                        resultList.innerHTML = ''; // Eski sonuçları temizle
+
+                        data.forEach(item => {
+                            const li = document.createElement('li');
+                            li.textContent = `${item.Name} - ${item.Category}`;
+                            resultList.appendChild(li);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching search results:', error));
+            }
+        });
+
+   
+    </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</body>
+</html>

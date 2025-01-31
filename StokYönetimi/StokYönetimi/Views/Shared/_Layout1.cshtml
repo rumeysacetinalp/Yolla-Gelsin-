@@ -1,0 +1,94 @@
+﻿@* _Layout1.cshtml *@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>    Admin Paneli</title>
+
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@latest/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@latest/dist/ionicons/ionicons.js"></script>
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: white;
+        }
+
+        .navbar {
+            background-color: white;
+            color: black;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+            .navbar .title {
+                font-size: 1.5rem;
+                font-weight: bold;
+            }
+
+        .menu {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+            .menu li a {
+                text-decoration: none;
+                color: black;
+                font-weight: bold;
+                padding: 10px 15px;
+                transition: all 0.3s;
+                border-radius: 5px;
+                display: flex;
+                align-items: center;
+            }
+
+                .menu li a ion-icon, .menu li a .material-icons {
+                    margin-right: 8px;
+                    transition: color 0.3s;
+                }
+
+                .menu li a:hover {
+                    background-color: #F27A1A;
+                    color: white;
+                }
+
+                    .menu li a:hover ion-icon, .menu li a:hover .material-icons {
+                        color: white;
+                    }
+
+        .content {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="title">Admin Paneli</div>
+        <nav>
+            <ul class="menu">
+                <li><a href="/Admin/ProductAdd"><span class="material-icons">add_circle</span> Ürün Ekle</a></li>
+                <li><a href="/Admin/ÜrünSilme"><span class="material-icons">edit</span> Ürün Sil ve Güncelle </a></li>
+                <li><a href="/Admin/SiparisOnay"><span class="material-icons">shopping_cart_checkout</span> Sipariş Onayı</a></li>
+                <li><a href="/Admin/StokGoruntule"><span class="material-icons">storage</span> Stok Görüntüle</a></li>
+                <li><a href="/Admin/logs"><span class="material-icons">assignment</span> Logları Görüntüle</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="content">
+        @RenderBody()
+    </main>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,120 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+
+@{
+    ViewData["Title"] = "Log Paneli";
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+<div class="log-container">
+    <h2>Log Paneli</h2>
+    <div id="log-list" class="log-list">
+        <!-- Loglar burada görünecek -->
+    </div>
+</div>
+
+@section Scripts {
+    <!-- jQuery kütüphanesi -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <script>
+        // Logları belirli aralıklarla sunucudan çekmek için polling mekanizması
+        function fetchLogs() {
+            fetch('/Admin/GetAllLogs')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Logları çekerken bir hata oluştu.");
+                    }
+                    return response.json();
+                })
+                .then(logs => {
+                    console.log("Logs fetched:", logs); // Gelen logları konsola yazdır
+                    updateLogUI(logs); // UI'yı güncelle
+                })
+                .catch(err => console.error("Logları çekerken hata oluştu:", err));
+        }
+
+        // UI'yı loglarla güncelle
+        function updateLogUI(logs) {
+            const logList = document.getElementById("log-list");
+            logList.innerHTML = ""; // Mevcut logları temizle
+
+            logs.forEach(log => {
+                const logHtml = `
+                    <div class="log-item">
+                        <span class="log-date">${new Date(log.logDate).toLocaleString()}</span>
+                        <span class="log-type">${log.logType}</span>
+                        <p class="log-details">${log.logDetails}</p>
+                    </div>`;
+                logList.innerHTML += logHtml;
+            });
+        }
+
+        // Sayfa yüklendiğinde ve belirli aralıklarla logları güncelle
+        window.onload = function () {
+            fetchLogs(); // Sayfa yüklendiğinde logları al
+            setInterval(fetchLogs, 5000); // Her 5 saniyede bir logları güncelle
+        };
+    </script>
+}
+<style>
+    .log-container {
+        width: 80%;
+        margin: 0 auto;
+        background-color: #f4f4f4;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .log-list {
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 10px;
+        background-color: #fff;
+        border-radius: 8px;
+    }
+
+    .log-item {
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #e8f0fe;
+        border-left: 4px solid #4285f4;
+        border-radius: 4px;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+        .log-item .log-date {
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .log-item .log-type {
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+    /* Razor özelinde keyframes */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+

@@ -1,0 +1,242 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil</title>
+ 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+
+
+
+
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .profile-container {
+            display: flex;
+            max-width: 1200px;
+            margin: 50px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-sidebar {
+            width: 300px;
+            background-color: #F27A1A;
+            color: #fff;
+            padding: 20px;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+
+            .profile-sidebar h2 {
+                color: #fff;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .profile-sidebar p {
+                margin-top: 10px;
+                font-size: 16px;
+                text-align: center;
+            }
+
+        .profile-main {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .form-control {
+            border: 1px solid #ddd;
+        }
+
+        .btn-custom {
+            background-color: #F27A1A;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+            .btn-custom:hover {
+                background-color: #e06815;
+            }
+
+    </style>
+
+
+    <style>
+        .spin-icon {
+            animation: spin 2s linear infinite; /* Çark için animasyon */
+        }
+
+        .hourglass-spin {
+            display: inline-block;
+            animation: spin 2s linear infinite; /* Kum saati için animasyon */
+        }
+
+        @@keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+    </style>
+
+
+
+
+
+
+</head>
+<body>
+    <div class="container profile-container">
+        <!-- Sol Sidebar -->
+        <div class="profile-sidebar">
+            <h2><i class="bi bi-person-circle"></i> Profil</h2>
+            <p>@Model.CustomerName @Model.LastName</p>
+            <p>@Model.Email</p>
+            <p><strong>Müşteri Türü:</strong> @Model.CustomerType</p>
+            <p><strong>Bütçe:</strong> @Model.Budget.ToString("C")</p>
+
+        </div>
+
+        <!-- Sağ İçerik -->
+        <div class="profile-main">
+            <h3>Bilgilerinizi Güncelleyin</h3>
+            <form method="post" action="/UserDashboard/UpdateProfile">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="firstName" class="form-label">Ad</label>
+                        <input type="text" class="form-control" id="firstName" name="customerName" value="@Model.CustomerName" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="lastName" class="form-label">Soyad</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" value="@Model.LastName" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="email" class="form-label">E-posta</label>
+                        <input type="email" class="form-control" id="email" name="email" value="@Model.Email" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-custom w-100">Bilgileri Güncelle</button>
+            </form>
+
+            <hr>
+
+            <hr>
+            <h3>Bütçe Güncelle</h3>
+            <p>Mevcut Bütçe: <strong>@Model.Budget.ToString("C")</strong></p>
+            <form method="post" action="/UserDashboard/UpdateBudget">
+                <div class="mb-3">
+                    <label for="budget" class="form-label">Yeni Bütçe (500 - 3000 TL)</label>
+                    <input type="number" class="form-control" id="budget" name="newBudget" placeholder="Yeni Bütçe" min="500" max="3000" required>
+                </div>
+                <button type="submit" class="btn btn-custom w-100">Bütçeyi Güncelle</button>
+            </form>
+
+
+            <h3>Şifre Güncelle</h3>
+            <form method="post" action="/UserDashboard/UpdatePassword">
+                <div class="mb-3">
+                    <label for="currentPassword" class="form-label">Mevcut Şifre</label>
+                    <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                </div>
+                <div class="mb-3">
+                    <label for="newPassword" class="form-label">Yeni Şifre</label>
+                    <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                </div>
+                <button type="submit" class="btn btn-custom w-100">Şifreyi Güncelle</button>
+            </form>
+
+
+            <hr>
+
+            <h3>Geçmiş Siparişlerim</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Ürün</th>
+                        <th>Miktar</th>
+                        <th>Toplam Fiyat</th>
+                        <th>Sipariş Tarihi</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in ViewBag.Orders)
+                    {
+                        string statusClass = order.OrderStatus switch
+                        {
+                            "Beklemede" => "table-warning",
+                            "İşleniyor" => "table-info",
+                            "Onaylandı" => "table-success",
+                            "Reddedildi" => "table-danger",
+                            _ => ""
+                        };
+
+                        string statusIcon = order.OrderStatus switch
+                        {
+                            "Beklemede" => "<i class='bi bi-hourglass-split hourglass-spin'></i>", // Kum saati dönecek
+                            "İşleniyor" => "<i class='bi bi-gear-fill spin-icon'></i>", // Çark dönecek
+                            "Onaylandı" => "<i class='bi bi-check-circle-fill'></i>", // Sabit
+                            "Reddedildi" => "<i class='bi bi-x-circle-fill'></i>", // Sabit
+                            _ => ""
+                        };
+
+                        <tr class="@statusClass">
+                            <td>@order.OrderID</td>
+                            <td>@order.Product.ProductName</td>
+                            <td>@order.Quantity</td>
+                            <td>@order.TotalPrice.ToString("C")</td>
+                            <td>@order.OrderDate.ToString("dd.MM.yyyy")</td>
+                            <td>
+                                @Html.Raw(statusIcon)
+                                @order.OrderStatus
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+
+
+            </table>
+        </div>
+    </div>
+
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,41 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<section style="text-align: center; margin-top: 50px;">
+    <h1 style="color: #333; font-size: 2.5rem;">Hoş Geldiniz, Admin!</h1>
+    <p style="color: #555; font-size: 1.2rem;">Yönetim paneline giriş yaparak sistem işlemlerini yönetebilirsiniz.</p>
+
+    <div style="margin-top: 30px;">
+        <a href="#" style="text-decoration: none; background-color: #F27A1A; color: white; padding: 15px 30px; border-radius: 5px; font-size: 1.2rem; transition: background-color 0.3s;">
+            Yönetim Paneline Git
+        </a>
+    </div>
+</section>
+
+<section style="margin-top: 50px; padding: 20px; text-align: center;">
+    <h2 style="color: #333;">Sık Kullanılan İşlemler</h2>
+    <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+        <a href="#" style="text-decoration: none; color: black; padding: 20px; background: #fff; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); border-radius: 10px; transition: transform 0.2s;">
+            <i class="fa-solid fa-plus" style="font-size: 2rem; color: #F27A1A;"></i>
+            <p>Ürün Ekle</p>
+        </a>
+        <a href="#" style="text-decoration: none; color: black; padding: 20px; background: #fff; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); border-radius: 10px; transition: transform 0.2s;">
+            <i class="fa-solid fa-trash" style="font-size: 2rem; color: #F27A1A;"></i>
+            <p>Ürün Sil</p>
+        </a>
+        <a href="#" style="text-decoration: none; color: black; padding: 20px; background: #fff; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); border-radius: 10px; transition: transform 0.2s;">
+            <i class="fa-solid fa-database" style="font-size: 2rem; color: #F27A1A;"></i>
+            <p>Stok Güncelle</p>
+        </a>
+    </div>
+</section>
